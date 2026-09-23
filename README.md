@@ -633,6 +633,22 @@ Very small inputs fall back to insertion sort.
 - Average time complexity: O(n log n)
 - Worst-case time complexity: quadratic (due to QuickSort), mitigated in practice by 3‑way partitioning and the n‑gram staging
 
+### UTF-8 INITCAP
+
+`sz_utf8_case_initcap` capitalizes runs of Unicode letters and decimal digits using
+Unicode 17 simple case mappings. The first character is uppercased and the rest
+are lowercased. Separators are preserved. For example, `hello_world` becomes
+`Hello_World`, `123ABC` becomes `123abc`, and `ßETA` becomes `ßeta`.
+This operation is distinct from full lower/upper, case folding, and Unicode titlecase.
+
+Provide a non-overlapping output buffer of at least three times the input byte length.
+The return value is the output byte length. Invalid UTF-8 returns `SZ_SIZE_MAX` and
+sets the optional error-offset argument to the beginning of the invalid sequence.
+On success the error offset is `SZ_SIZE_MAX`.
+Scalar, AVX2 and AVX-512 implementations share these rules. SIMD paths handle ASCII,
+Latin, Cyrillic, Greek, Armenian, Georgian and fullwidth blocks; other characters
+use the scalar mappings.
+
 ### Unicode 17, UTF-8, and Wide Characters
 
 Most StringZilla operations are byte-level, so they work well with ASCII and UTF-8 content out of the box.

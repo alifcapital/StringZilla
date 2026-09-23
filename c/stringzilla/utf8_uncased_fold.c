@@ -18,12 +18,14 @@ SZ_DISPATCH_INTERNAL void sz_dispatch_utf8_uncased_fold_update_(sz_capability_t 
     impl->utf8_uncased_fold = sz_utf8_uncased_fold_serial;
     impl->utf8_case_lower = sz_utf8_case_lower_serial;
     impl->utf8_case_upper = sz_utf8_case_upper_serial;
+    impl->utf8_case_initcap = sz_utf8_case_initcap_serial;
 
 #if SZ_USE_HASWELL
     if (caps & sz_cap_haswell_k) {
         impl->utf8_uncased_fold = sz_utf8_uncased_fold_haswell;
         impl->utf8_case_lower = sz_utf8_case_lower_haswell;
         impl->utf8_case_upper = sz_utf8_case_upper_haswell;
+        impl->utf8_case_initcap = sz_utf8_case_initcap_haswell;
     }
 #endif
 
@@ -32,6 +34,7 @@ SZ_DISPATCH_INTERNAL void sz_dispatch_utf8_uncased_fold_update_(sz_capability_t 
         impl->utf8_uncased_fold = sz_utf8_uncased_fold_icelake;
         impl->utf8_case_lower = sz_utf8_case_lower_icelake;
         impl->utf8_case_upper = sz_utf8_case_upper_icelake;
+        impl->utf8_case_initcap = sz_utf8_case_initcap_icelake;
     }
 #endif
 
@@ -70,4 +73,9 @@ SZ_API_RUNTIME sz_size_t sz_utf8_case_lower(sz_cptr_t source, sz_size_t length, 
 }
 SZ_API_RUNTIME sz_size_t sz_utf8_case_upper(sz_cptr_t source, sz_size_t length, sz_ptr_t target) {
     return sz_dispatch_table.utf8_case_upper(source, length, target);
+}
+
+SZ_API_RUNTIME sz_size_t sz_utf8_case_initcap(sz_cptr_t source, sz_size_t length, sz_ptr_t target,
+                                              sz_size_t *error_offset) {
+    return sz_dispatch_table.utf8_case_initcap(source, length, target, error_offset);
 }

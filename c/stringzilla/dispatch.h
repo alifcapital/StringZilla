@@ -87,6 +87,7 @@ typedef struct sz_implementations_t {
     sz_utf8_uncased_fold_t utf8_uncased_fold;
     sz_utf8_case_convert_t utf8_case_lower;
     sz_utf8_case_convert_t utf8_case_upper;
+    sz_utf8_case_initcap_t utf8_case_initcap;
     sz_utf8_uncased_search_t utf8_uncased_search;
 
     sz_utf8_segmenter_t utf8_wordbreaks;
