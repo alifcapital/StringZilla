@@ -40,7 +40,10 @@ def generate(ucd):
         "#ifndef STRINGZILLA_UTF8_INITCAP_TABLES_H_",
         "#define STRINGZILLA_UTF8_INITCAP_TABLES_H_",
         '#include "stringzilla/utf8_case/tables.h"',
-        "typedef struct sz_unicode_simple_case_t { sz_rune_t first, last; sz_i32_t delta; sz_u8_t step; } sz_unicode_simple_case_t;",
+        (
+            "typedef struct sz_unicode_simple_case_t { sz_rune_t first, last; "
+            "sz_i32_t delta; sz_u8_t step; } sz_unicode_simple_case_t;"
+        ),
     ]
     for mode, entries in maps.items():
         out.append(f"static sz_unicode_simple_case_t const sz_unicode_simple_{mode}_[] = {{")
@@ -65,7 +68,10 @@ def generate(ucd):
 
 def simd_family(simd, family, prefixes, maps, alnum):
     o = [
-        f"SZ_HELPER_AUTO sz_size_t sz_utf8_initcap_{simd.isa}_{family}_({simd.v} v, sz_ptr_t target, sz_bool_t *word_start) {{"
+        (
+            f"SZ_HELPER_AUTO sz_size_t "
+            f"sz_utf8_initcap_{simd.isa}_{family}_({simd.v} v, sz_ptr_t target, sz_bool_t *word_start) {{"
+        )
     ]
     if simd.avx2:
         o += ["    __m256i prev1 = sz_haswell_previous_bytes_(v, 1);"]
@@ -77,7 +83,10 @@ def simd_family(simd, family, prefixes, maps, alnum):
         ]
     else:
         o += [
-            "    sz_u64_t continuations = _mm512_cmplt_epu8_mask(_mm512_sub_epi8(v, _mm512_set1_epi8((char)0x80)), _mm512_set1_epi8(0x40));",
+            (
+                "    sz_u64_t continuations = "
+                "_mm512_cmplt_epu8_mask(_mm512_sub_epi8(v, _mm512_set1_epi8((char)0x80)), _mm512_set1_epi8(0x40));"
+            ),
             "    sz_u64_t allowed = ~(sz_u64_t)_mm512_movepi8_mask(v);",
         ]
     ascii_letters = simd.select(list(range(65, 91)) + list(range(97, 123)))
@@ -127,7 +136,10 @@ def simd_family(simd, family, prefixes, maps, alnum):
             "    __m256i capitalize = sz_utf8_initcap_haswell_expand_mask_(starts);",
             f"    __m256i letters = {ascii_letters};",
             "    __m256i result = _mm256_or_si256(v, _mm256_and_si256(letters, _mm256_set1_epi8(32)));",
-            "    result = _mm256_sub_epi8(result, _mm256_and_si256(_mm256_and_si256(capitalize, letters), _mm256_set1_epi8(32)));",
+            (
+                "    result = _mm256_sub_epi8(result, "
+                "_mm256_and_si256(_mm256_and_si256(capitalize, letters), _mm256_set1_epi8(32)));"
+            ),
         ]
     else:
         o += [
@@ -155,7 +167,10 @@ def simd_family(simd, family, prefixes, maps, alnum):
                 o += [f"    result = _mm256_add_epi8(result, _mm256_and_si256({mask}, _mm256_set1_epi8((char){d})));"]
             else:
                 o += [
-                    f"    result = _mm512_mask_add_epi8(result, match{idx} >> {back}, result, _mm512_set1_epi8((char){d}));"
+                    (
+                        f"    result = _mm512_mask_add_epi8(result, match{idx} >> {back}, "
+                        f"result, _mm512_set1_epi8((char){d}));"
+                    )
                 ]
     o += [
         "    _mm256_storeu_si256((__m256i *)target, result);"
