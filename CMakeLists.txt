@@ -760,6 +760,7 @@ if (STRINGZILLA_BUILD_BENCHMARK)
 endif ()
 
 if (STRINGZILLA_BUILD_TEST)
+    define_launcher(stringzilla_test_utf8_case_cpp17 17 "${STRINGZILLA_TARGET_ARCH}" test/utf8_case.cpp)
     # The serial test suite is split across per-domain translation units that compile into the same binary, so the
     # standards-matrix builds below parallelize and rebuild incrementally instead of recompiling one 5K-line file.
     # `define_launcher`'s `target_sources` accepts this list verbatim.

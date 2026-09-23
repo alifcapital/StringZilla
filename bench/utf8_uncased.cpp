@@ -118,6 +118,34 @@ void bench_utf8_uncased_fold(environment_t const &env) {
 #endif
 }
 
+void bench_utf8_case_lower(environment_t const &env) {
+    auto validator = utf8_uncased_fold_from_sz<sz_utf8_case_lower_serial> {env};
+    bench_result_t base = bench_unary(env, "sz_utf8_case_lower_serial", validator).log();
+#if SZ_USE_HASWELL
+    bench_unary(env, "sz_utf8_case_lower_haswell", validator,
+                utf8_uncased_fold_from_sz<sz_utf8_case_lower_haswell> {env})
+        .log(base);
+#endif
+#if SZ_USE_ICELAKE
+    bench_unary(env, "sz_utf8_case_lower_icelake", validator,
+                utf8_uncased_fold_from_sz<sz_utf8_case_lower_icelake> {env})
+        .log(base);
+#endif
+}
+void bench_utf8_case_upper(environment_t const &env) {
+    auto validator = utf8_uncased_fold_from_sz<sz_utf8_case_upper_serial> {env};
+    bench_result_t base = bench_unary(env, "sz_utf8_case_upper_serial", validator).log();
+#if SZ_USE_HASWELL
+    bench_unary(env, "sz_utf8_case_upper_haswell", validator,
+                utf8_uncased_fold_from_sz<sz_utf8_case_upper_haswell> {env})
+        .log(base);
+#endif
+#if SZ_USE_ICELAKE
+    bench_unary(env, "sz_utf8_case_upper_icelake", validator,
+                utf8_uncased_fold_from_sz<sz_utf8_case_upper_icelake> {env})
+        .log(base);
+#endif
+}
 #pragma endregion
 
 #pragma region Uncased Find Functions
@@ -292,6 +320,8 @@ int main(int argc, char const **argv) {
 
     // Unicode operations
     bench_utf8_uncased_fold(env);
+    bench_utf8_case_lower(env);
+    bench_utf8_case_upper(env);
     bench_utf8_uncased_search(env);
     bench_utf8_uncased_order(env);
 

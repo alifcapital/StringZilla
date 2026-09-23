@@ -8,6 +8,7 @@
  *  folding kernels compile as their own translation unit, in parallel with the heavy AVX-512 find.
  */
 #include "dispatch.h"
+#include <stringzilla/utf8_case.h>
 #include <stringzilla/utf8_uncased_fold.h> // `sz_utf8_uncased_fold_*`
 
 SZ_DISPATCH_INTERNAL void sz_dispatch_utf8_uncased_fold_update_(sz_capability_t caps) {
@@ -15,13 +16,23 @@ SZ_DISPATCH_INTERNAL void sz_dispatch_utf8_uncased_fold_update_(sz_capability_t 
     sz_unused_(caps);
 
     impl->utf8_uncased_fold = sz_utf8_uncased_fold_serial;
+    impl->utf8_case_lower = sz_utf8_case_lower_serial;
+    impl->utf8_case_upper = sz_utf8_case_upper_serial;
 
 #if SZ_USE_HASWELL
-    if (caps & sz_cap_haswell_k) { impl->utf8_uncased_fold = sz_utf8_uncased_fold_haswell; }
+    if (caps & sz_cap_haswell_k) {
+        impl->utf8_uncased_fold = sz_utf8_uncased_fold_haswell;
+        impl->utf8_case_lower = sz_utf8_case_lower_haswell;
+        impl->utf8_case_upper = sz_utf8_case_upper_haswell;
+    }
 #endif
 
 #if SZ_USE_ICELAKE
-    if (caps & sz_cap_icelake_k) { impl->utf8_uncased_fold = sz_utf8_uncased_fold_icelake; }
+    if (caps & sz_cap_icelake_k) {
+        impl->utf8_uncased_fold = sz_utf8_uncased_fold_icelake;
+        impl->utf8_case_lower = sz_utf8_case_lower_icelake;
+        impl->utf8_case_upper = sz_utf8_case_upper_icelake;
+    }
 #endif
 
 #if SZ_USE_NEON
@@ -52,4 +63,11 @@ SZ_DISPATCH_INTERNAL void sz_dispatch_utf8_uncased_fold_update_(sz_capability_t 
 
 SZ_API_RUNTIME sz_size_t sz_utf8_uncased_fold(sz_cptr_t source, sz_size_t source_length, sz_ptr_t destination) {
     return sz_dispatch_table.utf8_uncased_fold(source, source_length, destination);
+}
+
+SZ_API_RUNTIME sz_size_t sz_utf8_case_lower(sz_cptr_t source, sz_size_t length, sz_ptr_t target) {
+    return sz_dispatch_table.utf8_case_lower(source, length, target);
+}
+SZ_API_RUNTIME sz_size_t sz_utf8_case_upper(sz_cptr_t source, sz_size_t length, sz_ptr_t target) {
+    return sz_dispatch_table.utf8_case_upper(source, length, target);
 }

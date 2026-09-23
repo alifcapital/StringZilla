@@ -1078,6 +1078,9 @@ typedef sz_cptr_t (*sz_utf8_seek_t)(sz_cptr_t, sz_size_t, sz_size_t);
 /** @brief Signature of `sz_utf8_decode`. */
 typedef sz_cptr_t (*sz_utf8_decode_t)(sz_cptr_t, sz_size_t, sz_rune_t *, sz_size_t, sz_size_t *);
 
+/** @brief Signature of UTF-8 lowercase and uppercase conversion. */
+typedef sz_size_t (*sz_utf8_case_convert_t)(sz_cptr_t, sz_size_t, sz_ptr_t);
+
 /** @brief Signature of `sz_utf8_uncased_fold`. */
 typedef sz_size_t (*sz_utf8_uncased_fold_t)(sz_cptr_t, sz_size_t, sz_ptr_t);
 
